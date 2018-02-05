@@ -347,7 +347,7 @@ def buyingTime(period):
         else:
             print possiblebuyList
             possiblebuyList = []
-            return coin
+            return coin[1]
     except Exception as e:
         print e.__doc__
         print e.message
