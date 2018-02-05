@@ -120,7 +120,7 @@ def sendmail(subjecttext, bodytext):
     gmail_pass = password
     try:
         send_from = gmail_user
-        to = 'engurcanfes@gmail.com'
+        to = gmail_user
         subject = subjecttext
 
         msg = MIMEText(bodytext, 'plain')
