@@ -10,7 +10,7 @@ import smtplib
 from email.mime.text import MIMEText
 
 with open("ApiKeyAndSecret.txt", "r") as logfile:
-    logs = logfile.readlines()
+    logs = logfile.read().splitlines()
     ApiKey = logs[0]
     Secret = logs[1]
     email = logs[2]
