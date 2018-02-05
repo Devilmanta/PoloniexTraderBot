@@ -736,7 +736,7 @@ def main():
                                                                   pair, altSoldRate, altSoldBTCTotal, altSoldAmountTotal, altfee))
                                         with open("AITraderLog.txt", "r") as logfile:
                                             bodytext = str(logfile.readlines()[-1]) + "\n\nBTC Balance: " + str(conn.returnBalances()['BTC'])
-                                            sendmail('TraderBot STOPLOSS Information', bodytext)
+                                            sendmail('TraderBot SELL Information', bodytext)
                                         pair = None
                                         bought = False
                                         altBuyAmountTotal = 0
@@ -792,7 +792,7 @@ def main():
                                     with open("AITraderLog.txt", "r") as logfile:
                                         bodytext = str(logfile.readlines()[-1]) + "\n\nBTC Balance: " + \
                                                    str(float(conn.returnBalances()['BTC']) + (float(conn.returnBalances()[pair.split("_")[1]]) * lastpairprice))
-                                        sendmail('TraderBot STOPLOSS Information', bodytext)
+                                        sendmail('TraderBot BUY Information', bodytext)
                                 elif "error" in orderNumber:
                                     print orderNumber["error"]
                                 else:
