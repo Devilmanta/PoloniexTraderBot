@@ -308,16 +308,24 @@ def buyingTime(period):
                     if count > 264:  # Last 2 hour Volume Check for if its zero
                         if float(i["volume"]) == 0:
                             volumecheck = False
-                histog = HIST(MACD(SEMA(emadata, 12), SEMA(emadata, 26)), SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26))))
+                # histog = HIST(MACD(SEMA(emadata, 12), SEMA(emadata, 26)), SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26))))
                 print lastpair
                 # print "oscillator value: {}".format(float(MovingAv(kData, 3)[-1]))
                 # if SEMA(emadata, 10)[-2] < SEMA(emadata, 40)[-2] and SEMA(emadata, 10)[-1] > SEMA(emadata, 40)[-1] and volumecheck and float(MovingAv(kData, 3)[-1]) < 20:
-                if SEMA(emadata, 10)[-1] < SEMA(emadata, 40)[-1] and volumecheck and float(MovingAv(kData, 3)[-1]) < 20 and iscoingoesup(lastpair, 300, 6) > 0:
-                    point += (20 - float(MovingAv(kData, 3)[-1]))
-                    point += iscoingoesup(lastpair, 300, 6)
+                # if SEMA(emadata, 10)[-1] < SEMA(emadata, 40)[-1] and volumecheck and float(MovingAv(kData, 3)[-1]) < 20 and iscoingoesup(lastpair, 300, 6) > 0:
+                # if volumecheck and float(MovingAv(kData, 3)[-1]) < 20 and iscoingoesup(lastpair, 300, 6) > 0:
+                if volumecheck and iscoingoesup(lastpair, 300, 6) > 0:
+                    if float(MovingAv(kData, 3)[-1]) < 20:
+                        point += (20 - float(MovingAv(kData, 3)[-1]))
+                    # point += iscoingoesup(lastpair, 300, 6)
                     if (SEMA(emadata, 10)[-2] - SEMA(emadata, 40)[-2]) < (SEMA(emadata, 10)[-1] - SEMA(emadata, 40)[-1]):
                         point += 20
-                    if histog[-4] <= histog[-3] <= histog[-2] < 0 < histog[-1]:
+                    # if histog[-4] <= histog[-3] <= histog[-2] < 0 < histog[-1]:
+                        # point += 20
+                    if MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-2] < 0 < MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1]:
+                        point += 20
+                    if MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-2] < SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-2] and \
+                            SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-1] < MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1] < 0 and SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-1]:
                         point += 20
                     possiblebuyList.append([lastpair, point])
                     if not coin:
@@ -327,7 +335,7 @@ def buyingTime(period):
 
                 # if SEMA(emadata, 10)[-1] < SEMA(emadata, 40)[-1] and volumecheck and float(
                 #        MovingAv(kData, 3)[-1]) < 20 and iscoingoesup(lastpair, 300, 6) > 0:
-                    ########### NOT HERE ###############
+                    # NOT HERE ###############
                     # for i in range(1, 10):
                     #     if MACD(SEMA(emadata, 12), SEMA(emadata, 26))[(-i)-1] < 0 < MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-i]:
                     #         MACDCrossZero = True
@@ -342,11 +350,9 @@ def buyingTime(period):
                     # coin = lastpair
                     # break
         if not coin:
-            possiblebuyList = []
             return None
         else:
             print possiblebuyList
-            possiblebuyList = []
             return coin[0]
     except Exception as e:
         print e.__doc__
@@ -467,8 +473,6 @@ def main():
     buyingAmountinBTC = btcforBuying
     fee = .9975
     timebuyingtime = time.time()
-    # bought = False
-    # pair = None
     if liveTest:
         with open("AITraderLog.txt", "r") as logfile:
             log = str(logfile.readlines()[-1])
