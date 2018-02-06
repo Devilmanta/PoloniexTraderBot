@@ -317,6 +317,8 @@ def buyingTime(period):
                 if volumecheck and iscoingoesup(lastpair, 300, 6) > 0:
                     if float(MovingAv(kData, 3)[-1]) < 20:
                         point += (20 - float(MovingAv(kData, 3)[-1]))
+                    else:
+                        point -= float(MovingAv(kData, 3)[-1])
                     # point += iscoingoesup(lastpair, 300, 6)
                     if (SEMA(emadata, 10)[-2] - SEMA(emadata, 40)[-2]) < (SEMA(emadata, 10)[-1] - SEMA(emadata, 40)[-1]):
                         point += 20
