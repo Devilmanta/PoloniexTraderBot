@@ -221,11 +221,11 @@ def SEMA(values, window):
     emas = []
     for c, close in enumerate(values):
         if c == window:
-            emas.append(sum(values[0:window]) / window)
+            emas.append(sum(values[:window]) / window)
         elif c > window:
             emas.append(close * (2 / (window + 1)) + emas[-1] * (1 - (2 / (window + 1))))
         if len(emas) > window + 50:
-            del (emas[0])
+            del(emas[0])
     return emas
 
 
@@ -254,12 +254,16 @@ def MovingAv(values, window):
     movAv = []
     for c, close in enumerate(values):
         if c > window:
-            movAv.append(sum(values[-3:]) / window)
+            movAv.append(sum(values[-window:]) / window)
     return movAv
 
 
 def oscillator(close, low, high):
-    return 100 * (close - min(low[-14:])) / (max(high[-14:]) - min(low[-14:]))
+    if (max(high[-14:]) - min(low[-14:])) == 0:
+        print "zero divider"
+        return 0
+    else:
+        return 100 * (close - min(low[-14:])) / (max(high[-14:]) - min(low[-14:]))
 
 
 def buyingTime(period):
@@ -317,18 +321,16 @@ def buyingTime(period):
                 if volumecheck and iscoingoesup(lastpair, 300, 6) > 0:
                     if float(MovingAv(kData, 3)[-1]) < 20:
                         point += (20 - float(MovingAv(kData, 3)[-1]))
-                    else:
-                        point -= float(MovingAv(kData, 3)[-1])
                     # point += iscoingoesup(lastpair, 300, 6)
-                    if (SEMA(emadata, 10)[-2] - SEMA(emadata, 40)[-2]) < (SEMA(emadata, 10)[-1] - SEMA(emadata, 40)[-1]):
-                        point += 20
+                    # if (SEMA(emadata, 10)[-2] - SEMA(emadata, 40)[-2]) < (SEMA(emadata, 10)[-1] - SEMA(emadata, 40)[-1]):
+                    #     point += 20
                     # if histog[-4] <= histog[-3] <= histog[-2] < 0 < histog[-1]:
                         # point += 20
                     if MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-2] < 0 < MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1]:
-                        point += 20
-                    if MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-2] < SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-2] and \
-                            SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-1] < MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1] < 0 and SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-1]:
-                        point += 20
+                        point += 10
+                    if SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-1] < 0 and MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1] < 0:
+                        if MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-2] < SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-2] and SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-1] < MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1]:
+                            point += 10
                     possiblebuyList.append([lastpair, point])
                     if not coin:
                         coin = [lastpair, point]
@@ -784,9 +786,9 @@ def main():
                                             altBuyAmountTotal += (altBuyAmount * (1 - altfee))
                                             altBuyRate = float(i["rate"])
                                             altBuyBTCvalue = float(i["total"])
-                                            altBuyBTCTotal += altBuyBTCvalue
-                                        if round(altBuyAmountTotal, 7) >= round(((buyingAmountinBTC / bidrate) * (1 - altfee)), 7):
-                                            break
+                                            altBuyBTCTotal += (altBuyBTCvalue * (1 - altfee))
+                                            if round(altBuyAmountTotal, 7) >= round((buyingAmountinBTC / bidrate), 7):
+                                                break
                                         time.sleep(1)
                                     print "\n{} #{}# BUY rate: #{:.8f}# val: #{:.8f}#(BTC) amount: #{:.8f}# Fee: #{:.4f}#" \
                                           .format(datetime.now().replace(microsecond=0), pair, altBuyRate, altBuyBTCTotal, altBuyAmountTotal, altfee)
