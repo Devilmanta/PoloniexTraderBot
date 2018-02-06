@@ -787,7 +787,7 @@ def main():
                                             altBuyRate = float(i["rate"])
                                             altBuyBTCvalue = float(i["total"])
                                             altBuyBTCTotal += (altBuyBTCvalue * (1 - altfee))
-                                        if round(altBuyAmountTotal, 7) >= round(((buyingAmountinBTC / bidrate) * altfee), 7):
+                                        if round(altBuyAmountTotal, 7) >= round(((buyingAmountinBTC / bidrate) * (1 - altfee)), 7):
                                             break
                                         time.sleep(1)
                                     print "\n{} #{}# BUY rate: #{:.8f}# val: #{:.8f}#(BTC) amount: #{:.8f}# Fee: #{:.4f}#" \
