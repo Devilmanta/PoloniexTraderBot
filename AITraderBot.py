@@ -316,9 +316,9 @@ def buyingTime(period):
                 print lastpair
                 # print "oscillator value: {}".format(float(MovingAv(kData, 3)[-1]))
                 # if SEMA(emadata, 10)[-2] < SEMA(emadata, 40)[-2] and SEMA(emadata, 10)[-1] > SEMA(emadata, 40)[-1] and volumecheck and float(MovingAv(kData, 3)[-1]) < 20:
-                # if SEMA(emadata, 10)[-1] < SEMA(emadata, 40)[-1] and volumecheck and float(MovingAv(kData, 3)[-1]) < 20 and iscoingoesup(lastpair, 300, 6) > 0:
+                if SEMA(emadata, 10)[-1] < SEMA(emadata, 40)[-1] and volumecheck and float(MovingAv(kData, 3)[-1]) < 20 and iscoingoesup(lastpair, 300, 6) > 0:
                 # if volumecheck and float(MovingAv(kData, 3)[-1]) < 20 and iscoingoesup(lastpair, 300, 6) > 0:
-                if volumecheck and iscoingoesup(lastpair, 300, 6) > 0:
+                #if volumecheck and iscoingoesup(lastpair, 300, 6) > 0:
                     if float(MovingAv(kData, 3)[-1]) < 20:
                         point += (20 - float(MovingAv(kData, 3)[-1]))
                     # point += iscoingoesup(lastpair, 300, 6)
@@ -423,7 +423,7 @@ def sellingTime(pair, period, boughtprice, lastprice):
                 else:
                     return False
                 print "oscillator value: {}".format(float(MovingAv(kData, 3)[-1]))
-            elif float(MovingAv(kData, 3)[-1]) > 80:
+            elif float(MovingAv(kData, 3)[-1]) == 100:
                 return True
             else:
                 return False
