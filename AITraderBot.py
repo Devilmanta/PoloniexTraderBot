@@ -671,7 +671,7 @@ def main():
                         print "Lastpair rate:\t{:.8f}\n".format(lastpairprice)
                         # Buyin Selling StopLoss section
                         # StopLoss
-                        if altBuyRate < lastpairprice * .95:
+                        if altBuyRate < (lastpairprice * .95):
                             print "STOPLOSS SELLING"
                             # altSellAmount = float(conn.returnBalances()[pair.split("_")[1]])
                             altSellAmount = altBuyAmountTotal
