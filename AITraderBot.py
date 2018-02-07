@@ -425,6 +425,11 @@ def sellingTime(pair, period, boughtprice, lastprice):
                 print "oscillator value: {}".format(float(MovingAv(kData, 3)[-1]))
             elif float(MovingAv(kData, 3)[-1]) == 100:
                 return True
+            elif SEMA(emadata, 10)[-1] < SEMA(emadata, 10)[-2]:
+                if SEMA(emadata, 10)[-2] > SEMA(emadata, 40)[-2] and SEMA(emadata, 10)[-1] < SEMA(emadata, 40)[-1]:
+                    return True
+                else:
+                    return False
             else:
                 return False
 
