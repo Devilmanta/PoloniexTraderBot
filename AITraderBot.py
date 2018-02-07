@@ -412,15 +412,31 @@ def sellingTime(pair, period, boughtprice, lastprice):
             # else:
             #     return True
 
-            # BURASI ESKI HALI VE CALISIYOR #
-            if SEMA(emadata, 10)[-1] >= SEMA(emadata, 10)[-2] or (SEMA(emadata, 10)[-2] - SEMA(emadata, 40)[-2]) < (SEMA(emadata, 10)[-1] - SEMA(emadata, 40)[-1]):
-                print "oscillator value: {}".format(float(MovingAv(kData, 3)[-1]))
-                if float(MovingAv(kData, 3)[-1]) > 80:
-                    return True
+
+            # HODL
+            if SEMA(emadata, 10)[-1] > SEMA(emadata, 40)[-1]:
+                if SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-1] > 0 and MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1] > 0:
+                    if MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-2] >= SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-2] and MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1] < SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-1]:
+                        return True
+                    else:
+                        return False
                 else:
                     return False
-            else:
+                print "oscillator value: {}".format(float(MovingAv(kData, 3)[-1]))
+            elif float(MovingAv(kData, 3)[-1]) > 80:
                 return True
+            else:
+                return False
+
+            # BURASI ESKI HALI VE AZ DA OLSA CALISIYOR #
+            # if SEMA(emadata, 10)[-1] >= SEMA(emadata, 10)[-2] or (SEMA(emadata, 10)[-2] - SEMA(emadata, 40)[-2]) < (SEMA(emadata, 10)[-1] - SEMA(emadata, 40)[-1]):
+            #     print "oscillator value: {}".format(float(MovingAv(kData, 3)[-1]))
+            #     if float(MovingAv(kData, 3)[-1]) > 80:
+            #         return True
+            #     else:
+            #         return False
+            # else:
+            #     return True
         else:
             return False
     except Exception as e:
@@ -428,6 +444,7 @@ def sellingTime(pair, period, boughtprice, lastprice):
         print e.message
     finally:
         pass
+
 
 
 def bidratefinder(pair, connection):
@@ -496,7 +513,22 @@ def main():
     else:
         with open("AITraderLog.txt", "r") as logfile:
             log = str(logfile.readlines()[-1])
-            if "BUY" in log:
+            if "PARTIALBUY" in log:
+                bought = True
+                pair = log.split('#')[1]
+                altfee = float(log.split('#')[9])
+                altBuyAmountTotal = float(log.split('#')[7]) * (1 - altfee)
+                altBuyRate = float(log.split('#')[3])
+                print "Already Bought: {}".format(pair)
+            elif "PARTIALSELL" in log:
+                print "Partial Sell Detected"
+                bought = True
+                pair = log.split('#')[1]
+                altfee = float(log.split('#')[9])
+                altBuyAmountTotal = float(log.split('#')[11]) * (1 - altfee)
+                buyingAmountinBTC = float(log.split('#')[13])
+                altBuyRate = float(log.split('#')[15])
+            elif "BUY" in log:
                 bought = True
                 pair = log.split('#')[1]
                 altfee = float(log.split('#')[9])
@@ -509,14 +541,6 @@ def main():
                 pair = None
                 altBuyAmountTotal = 0
                 altBuyRate = 0
-            elif "PARTIAL" in log:
-                print "Partial Sell Detected"
-                bought = True
-                pair = log.split('#')[1]
-                altfee = float(log.split('#')[9])
-                altBuyAmountTotal = float(log.split('#')[11]) * (1 - altfee)
-                buyingAmountinBTC = float(log.split('#')[13])
-                altBuyRate = float(log.split('#')[15])
             else:
                 print "New coin searching"
                 bought = False
@@ -647,7 +671,7 @@ def main():
                         print "Lastpair rate:\t{:.8f}\n".format(lastpairprice)
                         # Buyin Selling StopLoss section
                         # StopLoss
-                        if (altBuyAmountTotal * lastpairprice) < buyingAmountinBTC * .95:
+                        if altBuyRate < lastpairprice * .95:
                             print "STOPLOSS SELLING"
                             # altSellAmount = float(conn.returnBalances()[pair.split("_")[1]])
                             altSellAmount = altBuyAmountTotal
@@ -722,12 +746,12 @@ def main():
                                         bought = True
                                         altBuyAmountTotal = sellAmount - altSoldAmountTotal
                                         buyingAmountinBTC = buyingAmountinBTC - altSoldBTCTotal
-                                        print "\n{} #{}# PARTIAL rate: #{:.8f}# val: #{:.8f}#(BTC) " \
+                                        print "\n{} #{}# PARTIALSELL rate: #{:.8f}# val: #{:.8f}#(BTC) " \
                                               "amount: #{:.8f}# Fee: #{:.4f}# AltRemaining: #{:.8f}# BTC Remaining :#{:.8f}# AltBuyRate: #{}"\
                                             .format(datetime.now().replace(microsecond=0), pair, altSoldRate,
                                                     altSoldBTCTotal, altSoldAmountTotal, altfee, altBuyAmountTotal, buyingAmountinBTC, altBuyRate)
                                         with open("AITraderLog.txt", "a") as logfile:
-                                            logfile.write("\n{} #{}# PARTIAL rate: #{:.8f}# val: #{:.8f}#(BTC) amount: "
+                                            logfile.write("\n{} #{}# PARTIALSELL rate: #{:.8f}# val: #{:.8f}#(BTC) amount: "
                                                           "#{:.8f}# Fee: #{:.4f}# AltRemaining: #{:.8f}# BTC Remaining :#{:.8f}# AltBuyRate: #{}"
                                                           .format(datetime.now().replace(microsecond=0), pair, altSoldRate,
                                                                   altSoldBTCTotal, altSoldAmountTotal, altfee,
@@ -766,6 +790,7 @@ def main():
                             bidrate = bidratefinder(pair, conn)
                             if bidrate:
                                 orderNumber = conn.buy(pair, bidrate, (buyingAmountinBTC / bidrate), 0, 1)
+                                boughtall = False
                                 print "BUY Order Given for {} Bidrate: {:.8f} Waiting for completion...\n".format(pair, bidrate)
                                 orderWaitingTime = time.time() + 300
                                 while orderWaitingTime > time.time():
@@ -787,20 +812,34 @@ def main():
                                             altBuyRate = float(i["rate"])
                                             altBuyBTCvalue = float(i["total"])
                                             altBuyBTCTotal += (altBuyBTCvalue * (1 - altfee))
-                                        if round(altBuyAmountTotal, 7) >= round(((buyingAmountinBTC / bidrate) * (1 - altfee)), 7):
+                                        if round(altBuyAmountTotal, 7) >= round(((buyingAmountinBTC / altBuyRate) * (1 - altfee)), 7):
+                                            boughtall = True
                                             break
                                         time.sleep(1)
-                                    print "\n{} #{}# BUY rate: #{:.8f}# val: #{:.8f}#(BTC) amount: #{:.8f}# Fee: #{:.4f}#" \
-                                          .format(datetime.now().replace(microsecond=0), pair, altBuyRate, altBuyBTCTotal, altBuyAmountTotal, altfee)
-                                    print ""
-                                    # Logging to a file
-                                    with open("AITraderLog.txt", "a") as logfile:
-                                        logfile.write("\n{} #{}# BUY rate: #{:.8f}# val: #{:.8f}#(BTC) amount: #{:.8f}# Fee: #{:.4f}#"
-                                                      .format(datetime.now().replace(microsecond=0), pair, altBuyRate, altBuyBTCTotal, altBuyAmountTotal, altfee))
-                                    with open("AITraderLog.txt", "r") as logfile:
-                                        bodytext = str(logfile.readlines()[-1]) + "\n\nBTC Balance: " + \
-                                                   str(float(conn.returnBalances()['BTC']) + (float(conn.returnBalances()[pair.split("_")[1]]) * lastpairprice))
-                                        sendmail('TraderBot BUY Information', bodytext)
+                                    if boughtall is False:
+                                        print "\n{} #{}# PARTIALBUY rate: #{:.8f}# val: #{:.8f}#(BTC) amount: #{:.8f}# Fee: #{:.4f}#" \
+                                            .format(datetime.now().replace(microsecond=0), pair, altBuyRate, altBuyBTCTotal, altBuyAmountTotal, altfee)
+                                        print ""
+                                        # Logging to a file
+                                        with open("AITraderLog.txt", "a") as logfile:
+                                            logfile.write("\n{} #{}# PARTIALBUY rate: #{:.8f}# val: #{:.8f}#(BTC) amount: #{:.8f}# Fee: #{:.4f}#"
+                                                          .format(datetime.now().replace(microsecond=0), pair, altBuyRate, altBuyBTCTotal, altBuyAmountTotal, altfee))
+                                        with open("AITraderLog.txt", "r") as logfile:
+                                            bodytext = str(logfile.readlines()[-1]) + "\n\nBTC Balance: " + \
+                                                       str(float(conn.returnBalances()['BTC']) + (float(conn.returnBalances()[pair.split("_")[1]]) * lastpairprice))
+                                            sendmail('TraderBot PARTIALBUY Information', bodytext)
+                                    else:
+                                        print "\n{} #{}# BUY rate: #{:.8f}# val: #{:.8f}#(BTC) amount: #{:.8f}# Fee: #{:.4f}#" \
+                                              .format(datetime.now().replace(microsecond=0), pair, altBuyRate, altBuyBTCTotal, altBuyAmountTotal, altfee)
+                                        print ""
+                                        # Logging to a file
+                                        with open("AITraderLog.txt", "a") as logfile:
+                                            logfile.write("\n{} #{}# BUY rate: #{:.8f}# val: #{:.8f}#(BTC) amount: #{:.8f}# Fee: #{:.4f}#"
+                                                          .format(datetime.now().replace(microsecond=0), pair, altBuyRate, altBuyBTCTotal, altBuyAmountTotal, altfee))
+                                        with open("AITraderLog.txt", "r") as logfile:
+                                            bodytext = str(logfile.readlines()[-1]) + "\n\nBTC Balance: " + \
+                                                       str(float(conn.returnBalances()['BTC']) + (float(conn.returnBalances()[pair.split("_")[1]]) * lastpairprice))
+                                            sendmail('TraderBot BUY Information', bodytext)
                                 elif "error" in orderNumber:
                                     print orderNumber["error"]
                                 else:
