@@ -418,24 +418,28 @@ def sellingTime(pair, period, boughtprice, lastprice):
 
             # HODL
             if SEMA(emadata, 10)[-1] > SEMA(emadata, 40)[-1]:
-                if SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-1] > 0 and MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1] > 0:
-                    if MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-2] >= SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-2] and MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1] < SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-1]:
-                        print "MACD pass down through SIG SELL"
+                if SEMA(emadata, 10)[-1] < SEMA(emadata, 10)[-2]:
+                    if MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-2] > 0 > MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1]:
+                        print "MACD pass through zero SELL"
+                        return True
+                    elif SEMA(emadata, 10)[-2] > SEMA(emadata, 40)[-2] and SEMA(emadata, 10)[-1] < SEMA(emadata, 40)[-1]:
+                        print "EMA10 pass down through EMA40 SELL"
                         return True
                     else:
                         return False
+                # elif SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-1] > 0 and MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1] > 0:
+                #     if MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-2] >= SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-2] and MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1] < SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-1]:
+                #         print "MACD pass down through SIG SELL"
+                #         return True
+                #     else:
+                #         return False
                 else:
                     return False
                 #print "oscillator value: {}".format(float(MovingAv(kData, 3)[-1]))
             elif float(MovingAv(kData, 3)[-1]) == 100:
                 print "Oscillator hit 100 SELL"
                 return True
-            elif SEMA(emadata, 10)[-1] < SEMA(emadata, 10)[-2]:
-                if SEMA(emadata, 10)[-2] > SEMA(emadata, 40)[-2] and SEMA(emadata, 10)[-1] < SEMA(emadata, 40)[-1]:
-                    print "EMA10 pass down through EMA40 SELL"
-                    return True
-                else:
-                    return False
+
             else:
                 return False
 
