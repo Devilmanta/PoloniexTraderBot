@@ -223,9 +223,7 @@ def SEMA(values, window):
         if c == window:
             emas.append(sum(values[:window]) / window)
         elif c > window:
-            emas.append(close * (2 / (window + 1)) + emas[-1] * (1 - (2 / (window + 1))))
-        if len(emas) > window + 50:
-            del(emas[0])
+            emas.append(values[c-1] * (2 / (window + 1)) + emas[-1] * (1 - (2 / (window + 1))))
     return emas
 
 
