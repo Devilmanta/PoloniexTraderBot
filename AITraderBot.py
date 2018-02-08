@@ -388,8 +388,8 @@ def sellingTime(pair, period, boughtprice, lastprice):
                 emadata.append(i["close"])
                 lowdata.append(i["low"])
                 highdata.append(i["high"])
-                if count > 20:
-                    kData.append(oscillator(i["close"], lowdata, highdata))
+                # if count > 20:
+                #     kData.append(oscillator(i["close"], lowdata, highdata))
             # if float(lastprice) > (float(boughtprice) * 1.02) and (
             #         SEMA(emadata, 10)[-1] >= SEMA(emadata, 10)[-2] or (SEMA(emadata, 10)[-2] - SEMA(emadata, 40)[-2]) < (
             #         SEMA(emadata, 10)[-1] - SEMA(emadata, 40)[-1])):
@@ -436,10 +436,6 @@ def sellingTime(pair, period, boughtprice, lastprice):
                 else:
                     return False
                 #print "oscillator value: {}".format(float(MovingAv(kData, 3)[-1]))
-            elif float(MovingAv(kData, 3)[-1]) == 100:
-                print "Oscillator hit 100 SELL"
-                return True
-
             else:
                 return False
 
