@@ -306,8 +306,8 @@ def buyingTime(period):
                 for count, i in enumerate(historicalData):
                     lowdata.append(i["low"])
                     highdata.append(i["high"])
-                    if count > 20:
-                        kData.append(oscillator(i["close"], lowdata, highdata))
+                    # if count > 20:
+                    #     kData.append(oscillator(i["close"], lowdata, highdata))
                     emadata.append(i["close"])
                     if count > 264:  # Last 2 hour Volume Check for if its zero
                         if float(i["volume"]) == 0:
