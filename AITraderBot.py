@@ -377,6 +377,7 @@ def sellingTime(pair, period, boughtprice, lastprice):
     emadata = []
     lowdata = []
     highdata = []
+    semalist = []
     kData = []
     count = 0
     try:
@@ -414,16 +415,17 @@ def sellingTime(pair, period, boughtprice, lastprice):
             #         return False
             # else:
             #     return True
-
+            for i in range(2, 8):
+                if SEMA(emadata, 10)[-i] > SEMA(emadata, 40)[-i]:
+                    semalist.append(True)
+                else:
+                    semalist.append(False)
 
             # HODL
             if SEMA(emadata, 10)[-1] > SEMA(emadata, 40)[-1]:
                 if SEMA(emadata, 10)[-1] < SEMA(emadata, 10)[-2]:
                     if MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-2] > 0 > MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1]:
                         print "MACD pass through zero SELL"
-                        return True
-                    elif SEMA(emadata, 10)[-2] > SEMA(emadata, 40)[-2] and SEMA(emadata, 10)[-1] < SEMA(emadata, 40)[-1]:
-                        print "EMA10 pass down through EMA40 SELL"
                         return True
                     else:
                         return False
@@ -435,7 +437,13 @@ def sellingTime(pair, period, boughtprice, lastprice):
                 #         return False
                 else:
                     return False
-                #print "oscillator value: {}".format(float(MovingAv(kData, 3)[-1]))
+                # print "oscillator value: {}".format(float(MovingAv(kData, 3)[-1]))
+            elif SEMA(emadata, 10)[-1] < SEMA(emadata, 40)[-1]:
+                if False in semalist:
+                    return False
+                else:
+                    print "EMA10 pass down through EMA40 SELL"
+                    return True
             else:
                 return False
 
