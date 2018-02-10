@@ -269,7 +269,7 @@ def buyingTime(period):
         print "Gathering coin information..."
         timeStamp1 = time.mktime(datetime.now().timetuple())
         timeNow = str(int(timeStamp1))
-        timeStamp2 = time.mktime((datetime.now() - timedelta(days=1)).timetuple())
+        timeStamp2 = time.mktime((datetime.now() - timedelta(hours=12)).timetuple())
         timePast = str(int(timeStamp2))
         changelist = []
         coinperc = conn.returnTicker()
@@ -290,17 +290,13 @@ def buyingTime(period):
             emadata = []
             lowdata = []
             highdata = []
-            kData = []
-            # MACDCrossZero = False
             MACDCrossSig = False
             volumecheck = True
             lastpair = dic.keys()[dic.values().index(j)]
             if lastpair in dontBuy:
                 pass
             else:
-                historicalData = conn.api_query("returnChartData",
-                                                {"currencyPair": lastpair,
-                                                 "start": timePast, "end": timeNow, "period": period})
+                historicalData = conn.api_query("returnChartData", {"currencyPair": lastpair, "start": timePast, "end": timeNow, "period": period})
                 for count, i in enumerate(historicalData):
                     lowdata.append(i["low"])
                     highdata.append(i["high"])
