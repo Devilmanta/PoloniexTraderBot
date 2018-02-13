@@ -290,6 +290,7 @@ def buyingTime(period):
             emadata = []
             lowdata = []
             highdata = []
+            kData = []
             MACDCrossSig = False
             volumecheck = True
             lastpair = dic.keys()[dic.values().index(j)]
@@ -300,8 +301,8 @@ def buyingTime(period):
                 for count, i in enumerate(historicalData):
                     lowdata.append(i["low"])
                     highdata.append(i["high"])
-                    # if count > 20:
-                    #     kData.append(oscillator(i["close"], lowdata, highdata))
+                    if count > 20:
+                        kData.append(oscillator(i["close"], lowdata, highdata))
                     emadata.append(i["close"])
                     if count > 264:  # Last 2 hour Volume Check for if its zero
                         if float(i["volume"]) == 0:
@@ -310,11 +311,12 @@ def buyingTime(period):
                 print lastpair
                 # print "oscillator value: {}".format(float(MovingAv(kData, 3)[-1]))
                 # if SEMA(emadata, 10)[-2] < SEMA(emadata, 40)[-2] and SEMA(emadata, 10)[-1] > SEMA(emadata, 40)[-1] and volumecheck and float(MovingAv(kData, 3)[-1]) < 20:
-                if volumecheck and iscoingoesup(lastpair, 300, 6) > 0:
+                # if volumecheck and iscoingoesup(lastpair, 300, 6) > 0:
                 # if volumecheck and float(MovingAv(kData, 3)[-1]) < 20 and iscoingoesup(lastpair, 300, 6) > 0:
-                #if volumecheck and iscoingoesup(lastpair, 300, 6) > 0:
+                # if volumecheck and iscoingoesup(lastpair, 300, 6) > 0:
+                if SEMA(emadata, 10)[-1] < SEMA(emadata, 40)[-1] and volumecheck and float(MovingAv(kData, 3)[-1]) < 20 and iscoingoesup(lastpair, 300, 6) > 0:
                     # if float(MovingAv(kData, 3)[-1]) < 20:
-                    #     point += (20 - float(MovingAv(kData, 3)[-1]))
+                    point += (20 - float(MovingAv(kData, 3)[-1]))
                     #     oscil = True
                     # point += iscoingoesup(lastpair, 300, 6)
                     # if (SEMA(emadata, 10)[-2] - SEMA(emadata, 40)[-2]) < (SEMA(emadata, 10)[-1] - SEMA(emadata, 40)[-1]):
@@ -324,17 +326,17 @@ def buyingTime(period):
                     # if MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-2] < 0 < MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1]:
                     #     point += 10
                     #     MACDCrossZero = True
-                    if SEMA(emadata, 10)[-1] < SEMA(emadata, 40)[-1]:
-                        if SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-1] < 0 and MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1] < 0:
-                                if MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-2] < SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-2] and SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-1] < MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1]:
-                                    MACDCrossSig = True
-                                    point += iscoingoesup(lastpair, 300, 6)
-                    if MACDCrossSig:
-                        possiblebuyList.append([lastpair, point])
-                        if not coin:
-                            coin = [lastpair, point]
-                        elif point > coin[1]:
-                            coin = [lastpair, point]
+                    # if SEMA(emadata, 10)[-1] < SEMA(emadata, 40)[-1]:
+                    #     if SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-1] < 0 and MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1] < 0:
+                    #             if MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-2] < SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-2] and SIG(MACD(SEMA(emadata, 12), SEMA(emadata, 26)))[-1] < MACD(SEMA(emadata, 12), SEMA(emadata, 26))[-1]:
+                    #                 MACDCrossSig = True
+                    point += iscoingoesup(lastpair, 300, 6)
+                    # if MACDCrossSig:
+                    #     possiblebuyList.append([lastpair, point])
+                    if not coin:
+                        coin = [lastpair, point]
+                    elif point > coin[1]:
+                        coin = [lastpair, point]
 
                 # if SEMA(emadata, 10)[-1] < SEMA(emadata, 40)[-1] and volumecheck and float(
                 #        MovingAv(kData, 3)[-1]) < 20 and iscoingoesup(lastpair, 300, 6) > 0:
